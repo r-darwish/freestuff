@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gtuk/discordwebhook"
-	"github.com/r-darwish/freestuff/freestuff"
+	"github.com/r-darwish/freestuff/src"
 	"log"
 	"os"
 	"strings"
