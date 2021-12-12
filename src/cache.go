@@ -41,6 +41,7 @@ func (r *RedisCache) IsKnown(title string) (bool, error) {
 }
 
 func (r *RedisCache) SetKnown(title string) error {
-	_, err := r.conn.Do("SETEX", title, "259200", "")
+	const TTL = "1209600"
+	_, err := r.conn.Do("SETEX", title, TTL, "")
 	return err
 }
