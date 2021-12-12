@@ -3,10 +3,12 @@ package freestuff
 import (
 	"errors"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
 	"io"
 	"log"
 	"net/http"
+	"regexp"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 type Subreddit string
@@ -70,6 +72,19 @@ func GetLinksFromSubreddit(subreddit Subreddit) ([]RedditLink, error) {
 
 		link.Image = getImage(selection)
 		link.Title = selection.Find(".title").Get(1).FirstChild.Data
+
+		relevant_platform, err := regexp.MatchString(`^\[.*(?:Mac|Windows).*\]`, link.Title)
+
+		if err != nil {
+			log.Printf("Failed matching on platform: %s", link.Title)
+			relevant_platform = true // Ignore match in case of error
+		}
+
+		if !relevant_platform {
+			log.Printf("Skipping irrelevant platform: %s", link.Title)
+			return
+		}
+
 		result = append(result, link)
 	})
 
