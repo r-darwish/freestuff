@@ -41,6 +41,26 @@ func run() int {
 			continue
 		}
 
+		fields := []discordwebhook.Field{}
+
+		extraInfo, err := freestuff.GetExtraInfo(link.Link)
+		if err != nil {
+			log.Printf("Error getting extra info for %s: %v", link.Link, err.Error())
+		}
+
+		t := true
+		if extraInfo != nil {
+			for _, label := range extraInfo.GetLabels() {
+				label := label
+				fields = append(fields, discordwebhook.Field{
+					Name:   &label.Key,
+					Value:  &label.Value,
+					Inline: &t,
+				})
+			}
+
+		}
+
 		embed := discordwebhook.Embed{
 			Title:     &link.Title,
 			Url:       &link.Link,
@@ -49,7 +69,9 @@ func run() int {
 				Name: &author,
 				Url:  &link.RedditLink,
 			},
+			Fields: &fields,
 		}
+
 		message := discordwebhook.Message{
 			Embeds: &[]discordwebhook.Embed{embed},
 		}

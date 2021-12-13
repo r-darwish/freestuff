@@ -37,7 +37,7 @@ func GetLinksFromSubreddit(subreddit Subreddit) ([]RedditLink, error) {
 		}
 	}(response.Body)
 
-	if response.StatusCode != 200 {
+	if !ResponseOk(response.StatusCode) {
 		if response.StatusCode == 429 {
 			return nil, errors.New(fmt.Sprintf("Too many requests to reddit. Need to wait %s seconds", response.Header.Get("Retry-After")))
 		}
