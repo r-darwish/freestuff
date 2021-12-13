@@ -11,9 +11,9 @@ import (
 	"strconv"
 )
 
-var appstoreRatingRegex = regexp.MustCompile(`(\d\.\d) • ([\d.]+)(K?) Ratings`)
+var gogRatingRegex = regexp.MustCompile(`(\d\.\d)/5`)
 
-func GetAppstoreInfo(link string) (ExtraInfo, error) {
+func GetGogInfo(link string) (ExtraInfo, error) {
 	response, err := http.Get(link)
 	if err != nil {
 		return nil, err
@@ -35,23 +35,14 @@ func GetAppstoreInfo(link string) (ExtraInfo, error) {
 		return nil, err
 	}
 
-	ratingText := reader.Find(".we-rating-count").Text()
+	ratingText := reader.Find(".rating").Text()
 	if ratingText == "" {
 		return nil, errors.New(fmt.Sprintf("Could not find the rating section in %s", link))
 	}
 
-	submatch := appstoreRatingRegex.FindStringSubmatch(ratingText)
-	if len(submatch) != 4 {
+	submatch := gogRatingRegex.FindStringSubmatch(ratingText)
+	if len(submatch) != 2 {
 		return nil, errors.New(fmt.Sprintf("Unparsable rating text %s", ratingText))
-	}
-
-	ratings, err := strconv.ParseFloat(submatch[2], 8)
-	if err != nil {
-		log.Fatalf("Not a number %s", submatch[2])
-	}
-
-	if submatch[3] == "K" {
-		ratings *= 1000
 	}
 
 	score, err := strconv.ParseFloat(submatch[1], 8)
@@ -59,21 +50,18 @@ func GetAppstoreInfo(link string) (ExtraInfo, error) {
 		log.Fatalf("Not a number %s", submatch[1])
 	}
 
-	return &AppstoreInfo{
-		Score:   score,
-		Ratings: ratings,
+	return &GogInfo{
+		Score: score,
 	}, nil
 
 }
 
-type AppstoreInfo struct {
-	Score   float64
-	Ratings float64
+type GogInfo struct {
+	Score float64
 }
 
-func (a AppstoreInfo) GetLabels() []Label {
+func (g GogInfo) GetLabels() []Label {
 	return []Label{
-		{"Score", fmt.Sprintf("%.1f", a.Score)},
-		{"Ratings", fmt.Sprintf("%.0f", a.Ratings)},
+		{"Score", fmt.Sprintf("%.1f", g.Score)},
 	}
 }

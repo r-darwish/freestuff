@@ -16,5 +16,9 @@ func GetExtraInfo(link string) (ExtraInfo, error) {
 		return GetAppstoreInfo(link)
 	}
 
+	if strings.Contains(link, "gog.com") {
+		return GetGogInfo(link)
+	}
+
 	return nil, nil
 }
