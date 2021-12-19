@@ -60,7 +60,7 @@ func GetLinksFromSubreddit(subreddit Subreddit) ([]RedditLink, error) {
 			return
 		}
 
-		link := RedditLink{}
+		link := &result[i]
 
 		attr, _ := selection.Attr("data-url")
 		link.Link = attr
@@ -70,7 +70,6 @@ func GetLinksFromSubreddit(subreddit Subreddit) ([]RedditLink, error) {
 
 		link.Image = getImage(selection)
 		link.Title = selection.Find(".title").Get(1).FirstChild.Data
-		result = append(result, link)
 	})
 
 	return result, nil

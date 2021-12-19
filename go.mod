@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
+	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/gomodule/redigo v1.8.6
 	github.com/gtuk/discordwebhook v1.0.0
 	github.com/stretchr/testify v1.7.0
