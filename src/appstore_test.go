@@ -19,8 +19,8 @@ func TestGetAppstoreInfo(t *testing.T) {
 		{
 			args: args{"https://apps.apple.com/app/demetrios/id1295749833"},
 			want: &AppstoreInfo{
-				Score:   4.8,
-				Ratings: 55,
+				Score:   4.7,
+				Ratings: 58,
 			},
 			wantErr: assert.NoError,
 		},
@@ -28,7 +28,7 @@ func TestGetAppstoreInfo(t *testing.T) {
 			args: args{"https://apps.apple.com/app/id482361332"},
 			want: &AppstoreInfo{
 				Score:   4.8,
-				Ratings: 6800,
+				Ratings: 6900,
 			},
 			wantErr: assert.NoError,
 		},
