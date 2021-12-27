@@ -35,9 +35,15 @@ func TestPrice(t *testing.T) {
 			args:    args{"[iOS][Calory: Simple Calories counter][lifetime IAP 29,99$ —-Free]"},
 			want:    29.99,
 			wantErr: assert.NoError,
-		}, {
+		},
+		{
 			args:    args{"[Bad North: Jotunn Edition [€4,49 -> €2.29]"},
 			want:    4.49,
+			wantErr: assert.NoError,
+		},
+		{
+			args:    args{"[iOS] [Pocket Pass Manager] [$3>FREE] [Local password manager, all keys securely stored on device, no clouds, no subscriptions]"},
+			want:    3,
 			wantErr: assert.NoError,
 		},
 	}

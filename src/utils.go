@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-var priceRegex = regexp.MustCompile(`[$€]?(\d+[.,]\d+)[$€]?`)
+var priceRegex = regexp.MustCompile(`[$€]?(\d+[.,]?\d*)[$€]?`)
 
 func ResponseOk(statusCode int) bool {
 	return statusCode >= 200 && statusCode < 300
