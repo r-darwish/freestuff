@@ -59,6 +59,13 @@ func handleLink(link freestuff.RedditLink) error {
 
 	var fields []discordwebhook.Field
 
+	defer func(cache *freestuff.RedisCache, title string) {
+		err := cache.SetKnown(title)
+		if err != nil {
+			log.Printf("Error storing a link in the cache: %v", err)
+		}
+	}(&cache, link.Link)
+
 	extraInfo, err := freestuff.GetExtraInfo(link.Link)
 	if err != nil {
 		log.Printf("Error getting extra info for %s: %v", link.Link, err.Error())
@@ -96,11 +103,6 @@ func handleLink(link freestuff.RedditLink) error {
 
 	err = discordwebhook.SendMessage(freestuff.Config.Webhook, message)
 	if err != nil && err.Error() != "" {
-		return err
-	}
-
-	err = cache.SetKnown(link.Link)
-	if err != nil {
 		return err
 	}
 
