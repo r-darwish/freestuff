@@ -48,6 +48,10 @@ func handleLink(link freestuff.RedditLink) error {
 		return err
 	}
 
+	if known {
+		return nil
+	}
+
 	defer func(cache *freestuff.RedisCache, title string) {
 		err := cache.SetKnown(title)
 		if err != nil {
@@ -60,7 +64,7 @@ func handleLink(link freestuff.RedditLink) error {
 		return err
 	}
 
-	if known || !isFree(link.Title) || price < freestuff.Config.PriceThreshold {
+	if !isFree(link.Title) || price < freestuff.Config.PriceThreshold {
 		return nil
 	}
 
