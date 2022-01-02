@@ -9,11 +9,14 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 var appstoreRatingRegex = regexp.MustCompile(`(\d\.\d) • ([\d.]+)(K?) Ratings`)
 
 func GetAppstoreInfo(link string) (ExtraInfo, error) {
+	var result AppstoreInfo
+
 	response, err := http.Get(link)
 	if err != nil {
 		return nil, err
@@ -45,30 +48,43 @@ func GetAppstoreInfo(link string) (ExtraInfo, error) {
 		return nil, errors.New(fmt.Sprintf("Unparsable rating text %s", ratingText))
 	}
 
-	ratings, err := strconv.ParseFloat(submatch[2], 8)
+	result.Ratings, err = strconv.ParseFloat(submatch[2], 8)
 	if err != nil {
 		log.Fatalf("Not a number %s", submatch[2])
 	}
 
 	if submatch[3] == "K" {
-		ratings *= 1000
+		result.Ratings *= 1000
 	}
 
-	score, err := strconv.ParseFloat(submatch[1], 8)
+	result.Score, err = strconv.ParseFloat(submatch[1], 8)
 	if err != nil {
 		log.Fatalf("Not a number %s", submatch[1])
 	}
 
-	return &AppstoreInfo{
-		Score:   score,
-		Ratings: ratings,
-	}, nil
+	reader.Find(".information-list__item__term").EachWithBreak(
+		func(_ int, selection *goquery.Selection) bool {
+			if dt := selection.Get(0); dt.FirstChild.Data == "Category" {
+				a := dt.NextSibling.NextSibling.FirstChild.NextSibling
+				if a.Data != "a" {
+					panic(fmt.Sprintf("Unexpected node %s", a.Data))
+				}
+
+				result.Category = strings.TrimSpace(a.FirstChild.Data)
+				return false
+			}
+
+			return true
+		})
+
+	return &result, nil
 
 }
 
 type AppstoreInfo struct {
-	Score   float64
-	Ratings float64
+	Score    float64
+	Ratings  float64
+	Category string
 }
 
 func (a AppstoreInfo) GetLabels() []Label {

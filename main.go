@@ -75,6 +75,11 @@ func handleLink(link freestuff.RedditLink) error {
 		log.Printf("Error getting extra info for %s: %v", link.Link, err.Error())
 	}
 
+	if appStoreInfo, ok := extraInfo.(*freestuff.AppstoreInfo); ok && appStoreInfo.Category != "Games" {
+		log.Printf("Skipping category %s for %s", appStoreInfo.Category, link)
+		return nil
+	}
+
 	t := true
 	if extraInfo != nil {
 		for _, label := range extraInfo.GetLabels() {
@@ -107,7 +112,7 @@ func handleLink(link freestuff.RedditLink) error {
 
 	err = discordwebhook.SendMessage(freestuff.Config.Webhook, message)
 	if err != nil && err.Error() != "" {
-		return err
+		return fmt.Errorf("sending a Discord message: %w", err)
 	}
 
 	return nil
