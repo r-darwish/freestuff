@@ -53,8 +53,6 @@ func GetLinksFromSubreddit(subreddit Subreddit) ([]RedditLink, error) {
 	selection := reader.Find(".link")
 	result := make([]RedditLink, selection.Length())
 	selection.Each(func(i int, selection *goquery.Selection) {
-		log.Printf("%v", selection.Text())
-
 		_, isAd := selection.Attr("data-adserver-impression-id")
 		if isAd {
 			return

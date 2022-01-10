@@ -77,7 +77,7 @@ func GetAppstoreInfo(link string) (ExtraInfo, error) {
 			return true
 		})
 
-	return &result, nil
+	return result, nil
 
 }
 
