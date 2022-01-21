@@ -73,6 +73,7 @@ func handleLink(link freestuff.RedditLink) error {
 	extraInfo, err := freestuff.GetExtraInfo(link.Link)
 	if err != nil {
 		log.Printf("Error getting extra info for %s: %v", link.Link, err.Error())
+		return nil
 	}
 
 	if appStoreInfo, ok := extraInfo.(*freestuff.AppstoreInfo); ok && appStoreInfo.Category != "Games" {

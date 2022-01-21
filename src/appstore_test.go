@@ -43,6 +43,15 @@ func TestGetAppstoreInfo(t *testing.T) {
 			},
 			wantErr: assert.NoError,
 		},
+		{
+			args: args{"https://apps.apple.com/app/twoslideover/id1547137384"},
+			want: AppstoreInfo{
+				Score:    5,
+				Ratings:  1,
+				Category: "Photo & Video",
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

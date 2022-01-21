@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-var appstoreRatingRegex = regexp.MustCompile(`(\d\.\d) • ([\d.]+)(K?) Ratings`)
+var appstoreRatingRegex = regexp.MustCompile(`(\d\.\d) • ([\d.]+)(K?) Ratings?`)
 
 func GetAppstoreInfo(link string) (ExtraInfo, error) {
 	var result AppstoreInfo
