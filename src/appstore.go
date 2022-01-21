@@ -39,27 +39,25 @@ func GetAppstoreInfo(link string) (ExtraInfo, error) {
 	}
 
 	ratingText := reader.Find(".we-rating-count").Text()
-	if ratingText == "" {
-		return nil, errors.New(fmt.Sprintf("Could not find the rating section in %s", link))
-	}
+	if ratingText != "" {
+		submatch := appstoreRatingRegex.FindStringSubmatch(ratingText)
+		if len(submatch) != 4 {
+			return nil, errors.New(fmt.Sprintf("Unparsable rating text %s", ratingText))
+		}
 
-	submatch := appstoreRatingRegex.FindStringSubmatch(ratingText)
-	if len(submatch) != 4 {
-		return nil, errors.New(fmt.Sprintf("Unparsable rating text %s", ratingText))
-	}
+		result.Ratings, err = strconv.ParseFloat(submatch[2], 8)
+		if err != nil {
+			log.Fatalf("Not a number %s", submatch[2])
+		}
 
-	result.Ratings, err = strconv.ParseFloat(submatch[2], 8)
-	if err != nil {
-		log.Fatalf("Not a number %s", submatch[2])
-	}
+		if submatch[3] == "K" {
+			result.Ratings *= 1000
+		}
 
-	if submatch[3] == "K" {
-		result.Ratings *= 1000
-	}
-
-	result.Score, err = strconv.ParseFloat(submatch[1], 8)
-	if err != nil {
-		log.Fatalf("Not a number %s", submatch[1])
+		result.Score, err = strconv.ParseFloat(submatch[1], 8)
+		if err != nil {
+			log.Fatalf("Not a number %s", submatch[1])
+		}
 	}
 
 	reader.Find(".information-list__item__term").EachWithBreak(
