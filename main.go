@@ -59,28 +59,12 @@ func handleLink(link freestuff.RedditLink) error {
 		}
 	}(&cache, link.Link)
 
-	price, err := freestuff.Price(link.Title)
-	if err != nil {
-		return err
-	}
-
-	if !isFree(link.Title) || price < freestuff.Config.PriceThreshold {
+	extraInfo, err, publish := shouldPublish(link)
+	if publish {
 		return nil
 	}
 
 	var fields []discordwebhook.Field
-
-	extraInfo, err := freestuff.GetExtraInfo(link.Link)
-	if err != nil {
-		log.Printf("Error getting extra info for %s: %v", link.Link, err.Error())
-		return nil
-	}
-
-	if appStoreInfo, ok := extraInfo.(*freestuff.AppstoreInfo); ok && appStoreInfo.Category != "Games" {
-		log.Printf("Skipping category %s for %s", appStoreInfo.Category, link)
-		return nil
-	}
-
 	t := true
 	if extraInfo != nil {
 		for _, label := range extraInfo.GetLabels() {
@@ -117,6 +101,29 @@ func handleLink(link freestuff.RedditLink) error {
 	}
 
 	return nil
+}
+
+func shouldPublish(link freestuff.RedditLink) (freestuff.ExtraInfo, error, bool) {
+	price, err := freestuff.Price(link.Title)
+	if err != nil {
+		return nil, err, false
+	}
+
+	if !isFree(link.Title) || price < freestuff.Config.PriceThreshold {
+		return nil, nil, false
+	}
+
+	extraInfo, err := freestuff.GetExtraInfo(link.Link)
+	if err != nil {
+		log.Printf("Error getting extra info for %s: %v", link.Link, err.Error())
+		return nil, nil, false
+	}
+
+	if appStoreInfo, ok := extraInfo.(freestuff.AppstoreInfo); ok && appStoreInfo.Category != "Games" {
+		log.Printf("Skipping category %s for %s", appStoreInfo.Category, link)
+		return nil, nil, false
+	}
+	return extraInfo, nil, true
 }
 
 func isFree(title string) bool {

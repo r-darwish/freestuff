@@ -52,10 +52,19 @@ func TestGetAppstoreInfo(t *testing.T) {
 			},
 			wantErr: assert.NoError,
 		},
+		{
+			args: args{"https://apps.apple.com/us/app/easy-spending-budget/id437238261"},
+			want: AppstoreInfo{
+				Score:    5,
+				Ratings:  1,
+				Category: "Photo & Video",
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetAppstoreInfo(tt.args.link)
+			got, err := GetExtraInfo(tt.args.link)
 			if !tt.wantErr(t, err, fmt.Sprintf("GetAppstoreInfo(%v)", tt.args.link)) {
 				return
 			}
